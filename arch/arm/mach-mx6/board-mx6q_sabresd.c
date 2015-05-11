@@ -100,8 +100,8 @@
 #define SABRESD_USBH1_PWR_EN	IMX_GPIO_NR(1, 29)
 #define SABRESD_DISP0_PWR_EN	IMX_GPIO_NR(1, 30)
 
-#define SABRESD_SD3_CD		IMX_GPIO_NR(2, 0)
-#define SABRESD_SD3_WP		IMX_GPIO_NR(2, 1)
+#define SABRESD_SD3_CD		IMX_GPIO_NR(7, 8)
+#define SABRESD_SD3_WP		IMX_GPIO_NR(6, 16)
 #define SABRESD_SD2_CD		IMX_GPIO_NR(2, 2)
 #define SABRESD_SD2_WP		IMX_GPIO_NR(2, 3)
 #define SABRESD_CHARGE_DOK_B	IMX_GPIO_NR(2, 24)
@@ -117,8 +117,8 @@
 #define SABRESD_eCOMPASS_INT	IMX_GPIO_NR(3, 16)
 #define SABRESD_GPS_PPS		IMX_GPIO_NR(3, 18)
 #define SABRESD_PCIE_PWR_EN	IMX_GPIO_NR(3, 19)
-#define SABRESD_USB_OTG_PWR	IMX_GPIO_NR(3, 22)
-#define SABRESD_USB_H1_PWR	IMX_GPIO_NR(3, 31)
+#define SABRESD_USB_OTG_PWR	IMX_GPIO_NR(4, 15)
+#define SABRESD_USB_H1_PWR	IMX_GPIO_NR(1, 4)
 #define SABRESD_CHARGE_CHG_1_B	IMX_GPIO_NR(3, 23)
 //!mm #define SABRESD_TS_INT		IMX_GPIO_NR(3, 26)
 //!mm iMX6Rex touschreen interrupt TSC2007
@@ -127,7 +127,7 @@
 #define SABRESD_POWER_OFF	IMX_GPIO_NR(3, 29)
 
 #define SABRESD_CAN1_STBY	IMX_GPIO_NR(4, 5)
-#define SABRESD_ECSPI1_CS0  	IMX_GPIO_NR(4, 9)
+#define SABRESD_ECSPI1_CS0  	IMX_GPIO_NR(2, 30)
 #define SABRESD_ECSPI3_CS2  	IMX_GPIO_NR(4, 26)
 #define SABRESD_CODEC_PWR_EN	IMX_GPIO_NR(4, 10)
 #define SABRESD_HDMI_CEC_IN	IMX_GPIO_NR(4, 11)
@@ -135,7 +135,7 @@
 
 #define SABRESD_DI0_D0_CS	IMX_GPIO_NR(5, 0)
 #define SABRESD_CHARGE_FLT_1_B	IMX_GPIO_NR(5, 2)
-#define SABRESD_PCIE_WAKE_B	IMX_GPIO_NR(5, 20)
+#define SABRESD_PCIE_WAKE_B	IMX_GPIO_NR(7, 12)
 
 #define SABRESD_CAP_TCH_INT1	IMX_GPIO_NR(6, 7)
 #define SABRESD_CAP_TCH_INT0	IMX_GPIO_NR(6, 8)
@@ -204,7 +204,7 @@
 #define SABRESD_ELAN_RST	IMX_GPIO_NR(3, 8)
 #define SABRESD_ELAN_INT	IMX_GPIO_NR(3, 28)
 
-#define MX6_ENET_IRQ		IMX_GPIO_NR(1, 6)
+#define MX6_ENET_IRQ		IMX_GPIO_NR(1, 28)
 #define IOMUX_OBSRV_MUX1_OFFSET	0x3c
 #define OBSRV_MUX1_MASK			0x3f
 #define OBSRV_MUX1_ENET_IRQ		0x9
@@ -334,7 +334,7 @@ static struct fec_platform_data fec_data __initdata = {
 
 static int mx6q_sabresd_spi_cs[] = {
 	//!mm changed to SPI3 CS2
-	SABRESD_ECSPI3_CS2,
+	SABRESD_ECSPI1_CS0,
 };
 
 static const struct spi_imx_master mx6q_sabresd_spi_data __initconst = {
@@ -994,10 +994,12 @@ static struct i2c_board_info mxc_i2c1_board_info[] __initdata = {
 	{
 		I2C_BOARD_INFO("mxc_hdmi_i2c", 0x50),
 	},
+/*
 	{
 		I2C_BOARD_INFO("ov5640_mipi", 0x3c),
 		.platform_data = (void *)&mipi_csi2_data,
 	},
+*/
 	{
 		I2C_BOARD_INFO("egalax_ts", 0x4),
 		.irq = gpio_to_irq(SABRESD_CAP_TCH_INT0),
@@ -1006,13 +1008,13 @@ static struct i2c_board_info mxc_i2c1_board_info[] __initdata = {
 		I2C_BOARD_INFO("max11801", 0x48),
 		.platform_data = (void *)&max11801_mode,
 		.irq = gpio_to_irq(SABRESD_TS_INT),
-	},*/
+	},
 	{
 		I2C_BOARD_INFO("tsc2007", 0x48),
 		.type = "tsc2007",
 		.platform_data	= &tsc2007_info,
 		.irq = gpio_to_irq(SABRESD_TS_INT),
-	},
+	},*/
 };
 
 static struct i2c_board_info mxc_i2c2_board_info[] __initdata = {
@@ -1652,14 +1654,14 @@ static void sabresd_suspend_enter(void)
 {
 	/* suspend preparation */
 	/* Disable AUX 5V */
-	gpio_set_value(SABRESD_AUX_5V_EN, 0);
+	//gpio_set_value(SABRESD_AUX_5V_EN, 0);
 }
 
 static void sabresd_suspend_exit(void)
 {
 	/* resume restore */
 	/* Enable AUX 5V */
-	gpio_set_value(SABRESD_AUX_5V_EN, 1);
+	//gpio_set_value(SABRESD_AUX_5V_EN, 1);
 }
 static const struct pm_platform_data mx6q_sabresd_pm_data __initconst = {
 	.name = "imx_pm",
@@ -1730,39 +1732,39 @@ static int __init imx6q_init_audio(void)
 static void pcie_3v3_power(void)
 {
 	/* disable PCIE_3V3 first */
-	gpio_request(SABRESD_PCIE_PWR_EN, "pcie_3v3_en");
-	gpio_direction_output(SABRESD_PCIE_PWR_EN, 0);
+	//gpio_request(SABRESD_PCIE_PWR_EN, "pcie_3v3_en");
+	//gpio_direction_output(SABRESD_PCIE_PWR_EN, 0);
 	mdelay(10);
 	/* enable PCIE_3V3 again */
-	gpio_set_value(SABRESD_PCIE_PWR_EN, 1);
-	gpio_free(SABRESD_PCIE_PWR_EN);
+	//gpio_set_value(SABRESD_PCIE_PWR_EN, 1);
+	//gpio_free(SABRESD_PCIE_PWR_EN);
 }
 
 static void pcie_3v3_reset(void)
 {
 	/* reset miniPCIe */
-	gpio_request(SABRESD_PCIE_RST_B_REVB, "pcie_reset_rebB");
-	gpio_direction_output(SABRESD_PCIE_RST_B_REVB, 0);
+	//gpio_request(SABRESD_PCIE_RST_B_REVB, "pcie_reset_rebB");
+	//gpio_direction_output(SABRESD_PCIE_RST_B_REVB, 0);
 	/* The PCI Express Mini CEM specification states that PREST# is
 	deasserted minimum 1ms after 3.3vVaux has been applied and stable*/
 	mdelay(1);
-	gpio_set_value(SABRESD_PCIE_RST_B_REVB, 1);
-	gpio_free(SABRESD_PCIE_RST_B_REVB);
+	//gpio_set_value(SABRESD_PCIE_RST_B_REVB, 1);
+	//gpio_free(SABRESD_PCIE_RST_B_REVB);
 }
 #endif
 
 static void gps_power_on(bool on)
 {
 	/* Enable/disable aux_3v15 */
-	gpio_request(SABRESD_AUX_3V15_EN, "aux_3v15_en");
-	gpio_direction_output(SABRESD_AUX_3V15_EN, 1);
-	gpio_set_value(SABRESD_AUX_3V15_EN, on);
-	gpio_free(SABRESD_AUX_3V15_EN);
+	//gpio_request(SABRESD_AUX_3V15_EN, "aux_3v15_en");
+	//gpio_direction_output(SABRESD_AUX_3V15_EN, 1);
+	//gpio_set_value(SABRESD_AUX_3V15_EN, on);
+	//gpio_free(SABRESD_AUX_3V15_EN);
 	/*Enable/disable gps_en*/
-	gpio_request(SABRESD_GPS_EN, "gps_en");
-	gpio_direction_output(SABRESD_GPS_EN, 1);
-	gpio_set_value(SABRESD_GPS_EN, on);
-	gpio_free(SABRESD_GPS_EN);
+	//gpio_request(SABRESD_GPS_EN, "gps_en");
+	//gpio_direction_output(SABRESD_GPS_EN, 1);
+	//gpio_set_value(SABRESD_GPS_EN, on);
+	//gpio_free(SABRESD_GPS_EN);
 
 }
 
@@ -1809,7 +1811,7 @@ static struct platform_device imx6q_gpio_led_device = {
 
 static void __init imx6q_add_device_gpio_leds(void)
 {
-	platform_device_register(&imx6q_gpio_led_device);
+	//platform_device_register(&imx6q_gpio_led_device);
 }
 #else
 static void __init imx6q_add_device_gpio_leds(void) {}
@@ -1849,7 +1851,7 @@ static struct platform_device imx6q_button_device = {
 
 static void __init imx6q_add_device_buttons(void)
 {
-	platform_device_register(&imx6q_button_device);
+	//platform_device_register(&imx6q_button_device);
 }
 #else
 static void __init imx6q_add_device_buttons(void) {}
@@ -2006,7 +2008,7 @@ static void __init mx6_sabresd_board_init(void)
 			imx6q_add_ipuv3fb(i, &sabresd_fb_data[i]);
 
 	imx6q_add_vdoa();
-	imx6q_add_mipi_dsi(&mipi_dsi_pdata);
+	//imx6q_add_mipi_dsi(&mipi_dsi_pdata);
 	imx6q_add_lcdif(&lcdif_data);
 	imx6q_add_ldb(&ldb_data);
 	voutdev = imx6q_add_v4l2_output(0);
@@ -2021,7 +2023,7 @@ static void __init mx6_sabresd_board_init(void)
 
 	imx6q_add_v4l2_capture(0, &capture_data[0]);
 	imx6q_add_v4l2_capture(1, &capture_data[1]);
-	imx6q_add_mipi_csi2(&mipi_csi2_pdata);
+	//imx6q_add_mipi_csi2(&mipi_csi2_pdata);
 	imx6q_add_imx_snvs_rtc();
 
 	if (1 == caam_enabled)
@@ -2083,7 +2085,7 @@ static void __init mx6_sabresd_board_init(void)
 	   Mfgtools want emmc is mmcblk0 and other sd card is mmcblk1.
 	*/
 	//!mm imx6q_add_sdhci_usdhc_imx(3, &mx6q_sabresd_sd4_data);
-	imx6q_add_sdhci_usdhc_imx(1, &mx6q_sabresd_sd2_data);
+	//imx6q_add_sdhci_usdhc_imx(1, &mx6q_sabresd_sd2_data);
 	imx6q_add_sdhci_usdhc_imx(2, &mx6q_sabresd_sd3_data);
 	imx_add_viv_gpu(&imx6_gpu_data, &imx6q_gpu_pdata);
 	imx6q_sabresd_init_usb();
@@ -2270,7 +2272,7 @@ static void __init mx6q_sabresd_reserve(void)
 /*
  * initialize __mach_desc_MX6Q_SABRESD data structure.
  */
-MACHINE_START(MX6Q_SABRESD, "Freescale i.MX 6Quad/Dual Rex Board")
+MACHINE_START(MX6Q_SABRESD, "Freescale i.MX 6Quad/Dual Tiny Board")
 	/* Maintainer: Freescale Semiconductor, Inc. */
 	.boot_params = MX6_PHYS_OFFSET + 0x100,
 	.fixup = fixup_mxc_board,
